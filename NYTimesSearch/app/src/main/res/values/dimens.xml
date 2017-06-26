@@ -3,4 +3,6 @@
     <dimen name="app_margin">10dp</dimen>
     <dimen name="thumbnail_size">75dp</dimen>
     <dimen name="small_space_5dp">5dp</dimen>
+    <dimen name="cardview_margin">4dp</dimen>
+    <dimen name="cardElevation_dimen">6dp</dimen>
 </resources>

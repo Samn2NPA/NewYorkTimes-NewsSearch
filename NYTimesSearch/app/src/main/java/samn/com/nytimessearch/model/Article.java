@@ -1,5 +1,6 @@
 package samn.com.nytimessearch.model;
 
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -43,22 +44,30 @@ public class Article {
     private String webUrl;
 
     @SerializedName("headline")
-    private String headLine;
+    private JsonObject headLine;
 
     @SerializedName("multimedia")
     private List<Media> multimedia;
+
+    private String mainHeadLine;
 
 
     public String getWebUrl() {
         return webUrl;
     }
-
-    public String getHeadLine() {
+    public JsonObject getHeadLine() {
         return headLine;
     }
-
     public List<Media> getMultimedia() {
         return multimedia;
+    }
+
+    public String getMainHeadLine() {
+        if (getHeadLine()!=null)
+            this.mainHeadLine = headLine.get("main").toString();
+        else
+            this.mainHeadLine = "";
+        return this.mainHeadLine;
     }
 
     public static class Media{
@@ -70,19 +79,15 @@ public class Article {
         public String getUrl() {
             return ResourceUtils.BASE_URL + url;
         }
-
         public String getType() {
             return type;
         }
-
         public int gẢetHeight() {
             return height;
         }
-
         public int getWidth() {
             return width;
         }
-
     }
 
 

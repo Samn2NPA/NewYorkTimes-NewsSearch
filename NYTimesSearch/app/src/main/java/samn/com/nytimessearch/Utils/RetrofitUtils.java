@@ -91,7 +91,6 @@ public class RetrofitUtils {
                 ApiResponse apiResponse = GSON.fromJson(body.string(), ApiResponse.class);
                 body.close();
 
-                Log.w("apiResponseInterceptor", body.string());
                 Log.w("apiResponseInterceptor", apiResponse.getStatus() + "||" + apiResponse.getResponse());
 
                 return response.newBuilder()

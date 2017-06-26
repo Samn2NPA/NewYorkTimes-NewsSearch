@@ -1,22 +1,19 @@
 package samn.com.nytimessearch.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,46 +29,59 @@ import samn.com.nytimessearch.model.Article;
 import samn.com.nytimessearch.model.SearchRequest;
 import samn.com.nytimessearch.model.SearchResult;
 
-import static samn.com.nytimessearch.Utils.ResourceUtils.url;
+import static android.support.v7.widget.StaggeredGridLayoutManager.VERTICAL;
 
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
 
     private List<Article> article;
-    private ArticleAdapter adapter;
+    private ArticleAdapter articleAdapter;
 
     private SearchRequest seachRequest;
     private ArticleAPI articleApi;
 
-    @BindView(R.id.etQuery) EditText etQuery;
-    @BindView(R.id.btnSearch) Button btnSearch;
-    @BindView(R.id.gvResult) GridView gvResult;
+    @BindView(R.id.rvArticle)
+    RecyclerView rvArticle;
+
+    @BindView(R.id.pbLoadMore)
+    ProgressBar pbLoadMore;
+
+    @BindView(R.id.pbLoading)
+    ProgressBar pbLoading;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     EditText searchViewEditText;
 
     private MenuItem miActionProgressItem; //menu Item Action Progress Item
 
+    private interface Listener{
+        void onResult(SearchResult searchResult);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
-        //set up view
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
-        article = new ArrayList<>();
-        adapter = new ArticleAdapter(this, article);
-
+        setupView();
         setupApi();
         search();
 
         //xử lý OnClick
         OnClickHandler();
 
-        gvResult.setAdapter(adapter);
+    }
+
+    private void setupView(){
+        articleAdapter = new ArticleAdapter(this);
+        rvArticle.setAdapter(articleAdapter);
+
+        StaggeredGridLayoutManager layoutManager = new
+                                StaggeredGridLayoutManager(2,VERTICAL); //(column , Orientation)
+        rvArticle.setLayoutManager(layoutManager);
     }
 
     private void setupApi(){
@@ -79,13 +89,16 @@ public class SearchActivity extends AppCompatActivity {
         articleApi = RetrofitUtils.get().create(ArticleAPI.class);
     }
 
-    private interface Listener{
-        void onResult(SearchResult searchResult);
-    }
-
     private void search(){
         seachRequest.resetPage();
-        fetchArticle();
+        pbLoading.setVisibility(View.VISIBLE);
+        fetchArticle(new Listener() {
+            @Override
+            public void onResult(SearchResult searchResult) {
+                Log.d(TAG, "searchResult :: " + searchResult.getArticles());
+                articleAdapter.setData(searchResult.getArticles());
+            }
+        });
         /*fetchArticle(new Listener() {
             @Override
             public void onResult(SearchResult searchResult) {
@@ -96,7 +109,7 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    private void fetchArticle(){
+    private void fetchArticle(final Listener listener){
         articleApi.search(seachRequest.toQueryMap()).enqueue(new Callback<SearchResult>() {
             @Override
             public void onResponse(Call<SearchResult> call, Response<SearchResult> response) {
@@ -104,7 +117,8 @@ public class SearchActivity extends AppCompatActivity {
                     Log.d(TAG, "Response:: " + response.body().toString() + "|| "
                                     + response.body().getArticles().size());
 
-                    handleResponse(response.body());
+                    listener.onResult(response.body());
+                    handleComplete();
                 }
             }
 
@@ -114,6 +128,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void handleComplete(){
+        pbLoading.setVisibility(View.GONE);
+        pbLoadMore.setVisibility(View.GONE);
     }
 
     /*private void fetchArticle(final Listener listener){
@@ -140,14 +159,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
     }*/
-
-    private void handleResponse(SearchResult seachResult){
-      /* adapter.setArticles(seachResult.getArticles());
-        article.addAll(seachResult.getArticles());*/
-
-        article = seachResult.getArticles();
-        Log.d(TAG, "article LIST:: " + article.size());
-    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -181,6 +192,7 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 searchview.clearFocus();
                 seachRequest.setQuery(searchViewEditText.getText().toString());
+                showProgressBar();
                 search();
                 return true;
             }
@@ -195,14 +207,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void OnClickHandler(){
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //onArticleSearch();
-            }
-        });
-
-        gvResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*gvResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Article item = article.get(position);
@@ -210,7 +215,7 @@ public class SearchActivity extends AppCompatActivity {
                 intent.putExtra(url, item.getWebUrl() );
                 startActivity(intent);
             }
-        });
+        });*/
     }
 
     /*private void onArticleSearch(){

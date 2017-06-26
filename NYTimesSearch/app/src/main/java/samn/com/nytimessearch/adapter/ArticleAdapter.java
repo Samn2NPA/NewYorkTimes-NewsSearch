@@ -1,15 +1,14 @@
 package samn.com.nytimessearch.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -19,67 +18,101 @@ import samn.com.nytimessearch.Utils.ResourceUtils;
 import samn.com.nytimessearch.model.Article;
 
 /**
- * Created by Samn on 25-Jun-17.
+ * Created by Samn on 26-Jun-17.
  */
 
-public class ArticleAdapter extends ArrayAdapter<Article> {
+public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = ArticleAdapter.class.getSimpleName();
-    private List<Article> articles;
+    private static final int NO_IMAGE = 0;
+    private static final int HAS_IMAGE = 1;
 
-    public ArticleAdapter(@NonNull Context context, List<Article> articles) {
-        super(context, -1);
-        this.articles = articles;
-    }
+    private final List<Article> articles;
+    private final Context context;
 
-    public void setArticles(List<Article> articles){
-        this.articles = articles;
+    public ArticleAdapter(Context context) {
+        this.articles = new ArrayList<>();
+        this.context = context;
     }
 
     @Override
-    public int getCount() {
+    public int getItemViewType(int position) {
+        if(hasImageAt(position))
+            return HAS_IMAGE;
+        else
+            return NO_IMAGE;
+    }
+
+    private boolean hasImageAt(int position){
+        Article article = articles.get(position);
+         return (article.getMultimedia() != null & article.getMultimedia().size() > 0);
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(viewType == NO_IMAGE){
+            View itemView = LayoutInflater.from(context)
+                            .inflate(R.layout.item_article_no_image, parent,false);
+            return new NoImageViewHolder(itemView);
+        }
+        else{
+            View itemView = LayoutInflater.from(context)
+                .inflate(R.layout.item_article, parent,false);
+            return new HasImageViewHolder(itemView);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Article article = articles.get(position);
+        if(holder instanceof NoImageViewHolder){
+            bindNoImage((NoImageViewHolder) holder, article);
+        } else if (holder instanceof HasImageViewHolder){
+            bindHasImage((HasImageViewHolder) holder, article);
+        }
+    }
+
+    private void bindNoImage(NoImageViewHolder holder, Article article){
+        holder.tvTitle_noImage.setText(article.getMainHeadLine());
+    }
+
+    private void bindHasImage(HasImageViewHolder holder, Article article){
+        holder.tvTitle.setText(article.getMainHeadLine());
+        Article.Media media = article.getMultimedia().get(0);
+        ResourceUtils.loadImage(context, holder.ivCover, media.getUrl());
+    }
+
+    @Override
+    public int getItemCount() {
         return articles.size();
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ViewHolder viewholder;
-
-        if(convertView == null){
-            convertView = LayoutInflater.from(getContext())
-                                    .inflate(R.layout.item_article, parent, false);
-
-            viewholder = new ViewHolder(convertView);
-
-            convertView.setTag(viewholder);
-        }
-        else {
-            viewholder = (ViewHolder) convertView.getTag();
-        }
-
-        bindView(position,viewholder);
-
-        return convertView;
+    public void setData(List<Article> newArticles) {
+        articles.clear();
+        articles.addAll(newArticles);
+        notifyDataSetChanged();
     }
 
-    private void bindView(int position, ViewHolder viewHolder){
-        Article article = articles.get(position);
-
-        viewHolder.tvTitle.setText(article.getHeadLine());
-        ResourceUtils.loadImage(getContext(), viewHolder.ivThumbnail, article.getMultimedia().get(0).getUrl());
-    }
-
-    static class ViewHolder{
+    class HasImageViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.tvTitle)
         TextView tvTitle;
 
-        @BindView(R.id.ivThumbnail)
-        ImageView ivThumbnail;
+        @BindView(R.id.ivCover)
+        ImageView ivCover;
 
-        public ViewHolder(View convertView){
-            ButterKnife.bind(this,convertView);
+        public HasImageViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
+    class NoImageViewHolder extends RecyclerView.ViewHolder{
+
+        @BindView(R.id.tvTitle_noImage)
+        TextView tvTitle_noImage;
+
+        public NoImageViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 }

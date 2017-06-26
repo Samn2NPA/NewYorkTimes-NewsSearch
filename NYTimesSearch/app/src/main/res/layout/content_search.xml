@@ -9,40 +9,35 @@
     tools:context="samn.com.nytimessearch.activity.SearchActivity"
     tools:showIn="@layout/activity_search">
 
-    <EditText
-        android:id="@+id/etQuery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_search"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/btnSearch"
-        android:maxLines="1"
-
-        android:layout_marginRight="11dp"
-        android:layout_marginEnd="11dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:id="@+id/btnSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="@string/search"
-
-        style="@style/ButtonStyle"/>
-
-    <GridView
-        android:id="@+id/gvResult"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvArticle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/btnSearch"
-        android:layout_margin="@dimen/small_space_5dp"
-        android:numColumns="4">
-    </GridView>
+        android:layout_above="@+id/pbLoadMore"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/app_margin"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </RelativeLayout>
+
+
+    <ProgressBar
+        android:id="@+id/pbLoadMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/app_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </RelativeLayout>
