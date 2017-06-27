@@ -14,7 +14,8 @@ import samn.com.nytimessearch.R;
 public class ResourceUtils {
 
     public static final String WEB_URL = "https://api.nytimes.com/svc/search/v2/";
-    public static String url = "url";
+    public static final String ARTICLE_OBJECT = "article_object";
+    public static final String url = "url";
     public static final String BASE_URL = "http://www.nytimes.com/";
 
     public static void loadImage(Context context, ImageView imageView, String url){

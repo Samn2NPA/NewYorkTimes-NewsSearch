@@ -1,6 +1,7 @@
 package samn.com.nytimessearch.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import samn.com.nytimessearch.R;
 import samn.com.nytimessearch.Utils.ResourceUtils;
+import samn.com.nytimessearch.activity.ArticleActivity;
 import samn.com.nytimessearch.model.Article;
 
 /**
@@ -23,14 +25,25 @@ import samn.com.nytimessearch.model.Article;
 
 public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final String TAG = ArticleAdapter.class.getSimpleName();
+
     private static final int NO_IMAGE = 0;
     private static final int HAS_IMAGE = 1;
 
     private final List<Article> articles;
     private final Context context;
 
+    public ArticleAdapter(Context context) {
+        this.articles = new ArrayList<>();
+        this.context = context;
+    }
+
     /* Listener to Load More */
     private Listener listener;
+
+    public Article getArticlesAtPosition(int position) {
+        return articles.get(position);
+    }
 
     public interface Listener{
         void onLoadMore();
@@ -40,11 +53,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.listener = listener;
     }
     /*End __  Listener to Load More */
-
-    public ArticleAdapter(Context context) {
-        this.articles = new ArrayList<>();
-        this.context = context;
-    }
 
     @Override
     public int getItemViewType(int position) {
@@ -108,12 +116,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return articles.size();
     }
 
+    /* dùng cho set Data cho adapter */
     public void setData(List<Article> newArticles) {
         articles.clear();
         articles.addAll(newArticles);
         notifyDataSetChanged();
     }
 
+    /* dùng cho Endless swipe (Swipe to load more) */
     public void appendData(List<Article> newArticles) {
         int nextPos = articles.size();
         articles.addAll(nextPos, newArticles);
@@ -130,6 +140,18 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public HasImageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int itemPos = getAdapterPosition();
+                    Article article = getArticlesAtPosition(itemPos);
+
+                    Intent intent = new Intent(context, ArticleActivity.class);
+                    intent.putExtra(ResourceUtils.ARTICLE_OBJECT, article.getWebUrl());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 
@@ -141,6 +163,18 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public NoImageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int itemPos = getAdapterPosition();
+                    Article article = getArticlesAtPosition(itemPos);
+
+                    Intent intent = new Intent(context, ArticleActivity.class);
+                    intent.putExtra(ResourceUtils.ARTICLE_OBJECT, article.getWebUrl());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

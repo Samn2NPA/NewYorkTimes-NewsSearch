@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -34,12 +35,17 @@ public class ArticleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //get URL form previous action
-        String url = getIntent().getStringExtra(ResourceUtils.url);
+        String URL_loadweb = getIntent().getStringExtra(ResourceUtils.ARTICLE_OBJECT);
+        Log.d(TAG, "URL_loadweb:: " + URL_loadweb);
 
         settingsWebView();
 
         //load the URL
-        wvArticle.loadUrl(url);
+        try {
+            wvArticle.loadUrl(URL_loadweb);
+        }catch (Exception e){
+            Log.e(TAG, e.toString());
+        }
     }
 
     //setting for web view
@@ -51,7 +57,7 @@ public class ArticleActivity extends AppCompatActivity {
     }
 
     // Manages the behavior when URLs are loaded
-    private class WebBrowser extends WebViewClient{
+    private class WebBrowser extends WebViewClient {
         @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -67,21 +73,8 @@ public class ArticleActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mi_ActionProgressItem = menu.findItem(R.id.article_action_progress);
-
-        //extract the action view from menu item
-        ProgressBar progressBar = (ProgressBar) MenuItemCompat.getActionView(mi_ActionProgressItem);
-
-        return super.onPrepareOptionsMenu(menu);
+    @Override
+    public void onBackPressed() {
+        finish();
     }
-
-    public void showProgressBar(){
-        mi_ActionProgressItem.setVisible(true);
-    }
-
-    public void hideProgressBar(){
-        mi_ActionProgressItem.setVisible(false);
-    }*/
 }

@@ -6,4 +6,11 @@
     <string name="title_activity_search">News Article Search</string>
     <string name="title_activity_article">Article</string>
     <string name="loading">Loading...</string>
+    <string name="begin_date">Begin Date: </string>
+    <string name="sort">Sort order:</string>
+    <string name="news_desk_value">News desk Value:</string>
+    <string name="art">Art</string>
+    <string name="fashion_style"> Fashion And Style</string>
+    <string name="sports">Sports</string>
+    <string name="save">Save</string>
 </resources>

@@ -10,7 +10,7 @@ The following **required** functionality is completed:
 
 * [ ] User can **search for news article** by specifying a query and launching a search. Search displays a grid of image results from the New York Times Search API.
 * [ ] User can click on "settings" which allows selection of **advanced search options** to filter results
-* [ ] User can configure advanced search filters such as:
+* [x] (Already have UI) -- can not show
   * [ ] Begin Date (using a date picker)
   * [ ] News desk values (Arts, Fashion & Style, Sports)
   * [ ] Sort order (oldest or newest)

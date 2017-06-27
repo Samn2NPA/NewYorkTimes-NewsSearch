@@ -2,12 +2,14 @@ package samn.com.nytimessearch.activity;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,13 +27,14 @@ import samn.com.nytimessearch.R;
 import samn.com.nytimessearch.Utils.RetrofitUtils;
 import samn.com.nytimessearch.adapter.ArticleAdapter;
 import samn.com.nytimessearch.api.ArticleAPI;
+import samn.com.nytimessearch.fragment.SettingDialogFragment;
 import samn.com.nytimessearch.model.Article;
 import samn.com.nytimessearch.model.SearchRequest;
 import samn.com.nytimessearch.model.SearchResult;
 
 import static android.support.v7.widget.StaggeredGridLayoutManager.VERTICAL;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements SettingDialogFragment.SettingDialogListener{
 
     private static final String TAG = SearchActivity.class.getSimpleName();
 
@@ -57,6 +60,11 @@ public class SearchActivity extends AppCompatActivity {
 
     private MenuItem miActionProgressItem; //menu Item Action Progress Item
 
+    @Override
+    public void onFinishSettingDialog(String spinner_value, String datetime, boolean check_art, boolean check_fashionandstyle, boolean check_sport) {
+        Log.d(TAG, "Finish Dialog!!!");
+    }
+
     private interface Listener{
         void onResult(SearchResult searchResult);
     }
@@ -70,10 +78,6 @@ public class SearchActivity extends AppCompatActivity {
         setupView();
         setupApi();
         search();
-
-        //xử lý OnClick
-        OnClickHandler();
-
     }
 
     private void setupView(){
@@ -123,7 +127,6 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-
     private void fetchArticle(final Listener listener){
         articleApi.search(seachRequest.toQueryMap()).enqueue(new Callback<SearchResult>() {
             @Override
@@ -168,6 +171,12 @@ public class SearchActivity extends AppCompatActivity {
         miActionProgressItem.setVisible(false);
     }
 
+    public void showSettingDialog(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        SettingDialogFragment settingDialog = SettingDialogFragment.newInstance("Setting search");
+        settingDialog.show(fragmentManager, "fragment_setting");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -197,19 +206,11 @@ public class SearchActivity extends AppCompatActivity {
 
         return super.onCreateOptionsMenu(menu);
     }
+}
 
-    private void OnClickHandler(){
-        /*gvResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Article item = article.get(position);
-                Intent intent = new Intent(getApplicationContext(), ArticleActivity.class);
-                intent.putExtra(url, item.getWebUrl() );
-                startActivity(intent);
-            }
-        });*/
-    }
 
+
+/*using ANDROID HTTP ASYNC to search article*/
     /*private void onArticleSearch(){
         String query = etQuery.getText().toString();
 
@@ -247,4 +248,3 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
     }*/
-}

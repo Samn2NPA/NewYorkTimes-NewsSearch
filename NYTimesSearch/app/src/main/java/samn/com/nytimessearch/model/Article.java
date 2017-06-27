@@ -40,6 +40,7 @@ type_of_material: "News",
 _id: "594f5d747c459f257c1abe18",
 word_count: 230,
 slideshow_credits: null*/
+
 public class Article {
     @SerializedName("web_url")
     private String webUrl;
@@ -52,6 +53,7 @@ public class Article {
 
     private String mainHeadLine;
 
+    public Article(){ }
 
     public String getWebUrl() {
         return webUrl;
@@ -106,7 +108,62 @@ public class Article {
             return width;
         }
     }
+}
 
+/* use for PARCELER but have bugs
+public static class Headline{}
+
+public static class MediaListParcelConverter implements ParcelConverter<List<Article.Media>>{
+
+    @Override
+    public void toParcel(List<Article.Media> input, android.os.Parcel parcel) {
+        if (input == null) {
+            parcel.writeInt(-1);
+        }
+        else {
+            parcel.writeInt(input.size());
+            for (Article.Media item : input) {
+                parcel.writeParcelable(Parcels.wrap(item), 0);
+            }
+        }
+    }
+
+    @Override
+    public List<Article.Media> fromParcel(android.os.Parcel parcel) {
+        int size = parcel.readInt();
+        if (size < 0) return null;
+        List<Article.Media> items = new ArrayList<Article.Media>();
+        for (int i = 0; i < size; ++i) {
+            items.add((Article.Media) Parcels.unwrap(parcel.readParcelable(Article.Media.class.getClassLoader())));
+        }
+        return items;
+    }
+}
+
+public static class HeadlineJsonObjectConverter implements ParcelConverter<JsonObject>{
+    @Override
+    public void toParcel(JsonObject input, android.os.Parcel parcel) {
+        if (input == null) {
+            parcel.writeInt(-1);
+        }
+        else {
+            parcel.writeInt(input.size());
+            parcel.writeParcelable(Parcels.wrap(input), 0);
+        }
+    }
+
+    @Override
+    public JsonObject fromParcel(android.os.Parcel parcel) {
+        int size = parcel.readInt();
+        if (size < 0) return null;
+        return Parcels.unwrap(parcel.readParcelable(Headline.class.getClassLoader()));
+    }
+}
+*/
+
+
+/*
+* Parse JSONObject to JAVA Object when using ANDROID HTTP ASYNC */
 
     /*public Article(JSONObject jsonObject){
         try {
@@ -138,4 +195,3 @@ public class Article {
 
         return results;
     }*/
-}
